@@ -1,19 +1,8 @@
-dist: trusty
 language: c
-
-
-matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - build-essential
-            - gcc-multilib
-            - g++-multilib
-            - check
-
+before_install: 
+  - sudo apt-get update
+  - sudo apt-get install -y check
+compiler: gcc
 script:
-  make test
+  - make
+  - make test
