@@ -5,8 +5,6 @@
 #include <ctype.h>
 #include <stdio.h>
 
-// node* create_node(char* word);
-// void make_lowercase(const char* word, char* lower_word);
 
 node* create_node(char* word)
 {
@@ -35,30 +33,37 @@ int check_words(FILE* fp, hashmap_t hashtable[], char* misspelled[])
     char *line = NULL;
     size_t len = 0;
     int mispelledCount = 0;
-    char delim[] = " .,";
+    /* Let's strip all this garbage */
+    char delim[] = " .,!?;:()-”“*[]_1234567890<>@#$^&+={}|";
 
     while(getline(&line, &len, fp) != -1) 
     {
-        line[strcspn(line, "\n")] = 0;
+        /*strip CR and new line. seriously why does CR exist */
+        line[strcspn(line, "\r\n")] = 0;
         char* word = strtok(line, delim); 
   
         while (word != NULL) 
         { 
-            char* word_to_check = strdup(word);
-
-            if (!check_word(word_to_check, hashtable)) 
+            /* Let's settle for not checking words that start with apostrophes */
+            if (word[0] != '\'')
             {
-                misspelled[mispelledCount++] = word_to_check;
-                if (mispelledCount > MAX_MISSPELLED - 1) break;
+                char* word_to_check = strdup(word);
+                /* if we don't find it, put it in our mispelled table. */
+                if (!check_word(word_to_check, hashtable)) 
+                {
+                    misspelled[mispelledCount++] = word_to_check;
+                    if (mispelledCount > MAX_MISSPELLED - 1) break;
+                }
+                else
+                {
+                    /* discard correct word */
+                    free(word_to_check);
+                }
             }
-            else
-            {
-               free(word_to_check);
-            }
-            
+          
             word = strtok(NULL, delim); 
         } 
-               
+        /* lets not exceed our misspelled array */
         if (mispelledCount > MAX_MISSPELLED - 1) break;
 
     }
@@ -84,16 +89,17 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[])
 
     while(getline(&word, &len, fp) != -1) 
     {
-        word[strcspn(word, "\n")] = 0;
+        /* Strip new lines*/
+        word[strcspn(word, "\r\n")] = 0;
         char* parsed_word = strdup(word);
         
         if (parsed_word != NULL)
         {
-            
+            /* make it lower case and then create the node */
             make_lowercase(parsed_word);
             node* new_word = create_node(parsed_word);
 
-            
+            /* If weve hit that bucket before, insert into LL */
             if (hashtable[hash_function(parsed_word)] != NULL)
             {
                 node* last = hashtable[hash_function(parsed_word)];
@@ -105,6 +111,7 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[])
             }
             else
             {
+                /* or lets init that bucket */
                 hashtable[hash_function(parsed_word)] = new_word;
             }
 
@@ -123,17 +130,19 @@ bool load_dictionary(const char* dictionary_file, hashmap_t hashtable[])
 
 bool check_word(const char* word, hashmap_t hashtable[])
 {
-   
+    /* lowercase word for matching */
     char* lower_word = strdup(word);
     make_lowercase(lower_word);
 
+    /* get bucket */
     node* check_node = hashtable[hash_function(lower_word)];
+    /* if bucket is empty, word doesn't exist! It's really that easy folks. */
     if (check_node == NULL)
     {
         free(lower_word);
         return false;
     }
-
+    /* If not, lets check the linked list */
     while (1)
     {
         if (!strncmp(check_node->word, lower_word, strlen(check_node->word))) 
@@ -146,6 +155,7 @@ bool check_word(const char* word, hashmap_t hashtable[])
     }
 
     free(lower_word);
+    /* Alright, couldn't find it */
     return false;
 }
 

@@ -4,9 +4,6 @@
 #include "dictionary.h"
 
 
-#define DICTIONARY "wordlist.txt"
-#define TESTDICT "test_worlist.txt"
-
 void cleanup_mem(hashmap_t hashtable[], char* misspelled[])
 {
     for (int i = 0; i < MAX_MISSPELLED; i++) free(misspelled[i]);
@@ -27,19 +24,29 @@ void cleanup_mem(hashmap_t hashtable[], char* misspelled[])
 }
 
 
-int main()
+int main(int argc, char* argv[]) 
 {
+
+    if (argc != 3)
+    {
+        printf("This program takes two arguments - please provide wordlist and text to check.\n");
+        exit(EXIT_FAILURE);
+    }
+
     hashmap_t hashtable[HASH_SIZE];
     
-    load_dictionary(DICTIONARY, hashtable);
+    load_dictionary(argv[1], hashtable);
 
     char *misspelled[MAX_MISSPELLED];
     for (int i = 0; i < MAX_MISSPELLED; i++) misspelled[i] = NULL;
 
 
-    FILE *fp = fopen("test1.txt", "r");
+    FILE *fp = fopen(argv[2], "r");
     int num_misspelled = check_words(fp, hashtable, misspelled);
-    for (int i = 0; i < num_misspelled; i++) printf("misspelled: %s\n", misspelled[i]);
+    for (int i = 0; i < num_misspelled; i++) 
+    {
+    //    printf("misspelled: %s\n", misspelled[i]);
+    }
     printf("Mispelled: %d\n", num_misspelled);
     fclose(fp);
 
