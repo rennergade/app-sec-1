@@ -1,7 +1,7 @@
 language: c
 compiler: gcc
 
-install: make get-deps
+before_install: make get-deps
 script:
   - make
   - make test
