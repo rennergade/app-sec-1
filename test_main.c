@@ -19,10 +19,6 @@ START_TEST(test_dictionary_normal)
     ck_assert_msg(strcmp(hashtable[539]->word, bucket_check_3) == 0);
     ck_assert_msg(strcmp(hashtable[448]->word, bucket_check_4) == 0);
  
-   
-    // Here we can test if certain words ended up in certain buckets
-    // to ensure that our load_dictionary works as intended. I leave
-    // this as an exercise.
 }
 END_TEST
 
@@ -57,8 +53,20 @@ START_TEST(test_check_word_normal)
     
     ck_assert(check_word(correct_word, hashtable));
     ck_assert(!check_word(punctuation_word_2, hashtable));
-    ck_assert(!check_word(punctuation_word_2, hashtable));
 }
+END_TEST
+
+
+START_TEST(test_check_words_weird)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    load_dictionary(DICTIONARY, hashtable);
+    char *misspelled[MAX_MISSPELLED];
+    FILE *fp = fopen("testwords.txt", "r");
+
+    int num_misspelled = check_words(fp, hashtable, misspelled);
+    ck_assert(num_misspelled == 3);
+}    
 END_TEST
 
 START_TEST(test_check_words_normal)
@@ -94,7 +102,8 @@ check_word_suite(void)
     tcase_add_test(check_word_case, test_check_words_normal);
     tcase_add_test(check_word_case, test_dictionary_normal);
     tcase_add_test(check_word_case, test_buffer_normal);
-    tcase_add_test(check_word_case, test_accents_normal);
+    tcase_add_test(check_word_case, test_check_words_weird);
+
 
     suite_add_tcase(suite, check_word_case);
 

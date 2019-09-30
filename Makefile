@@ -28,7 +28,7 @@ fuzz:
 	export AFL_INST_RATIO=100 
 	export AFL_HARDEN=1 
 	./afl/afl-gcc -Wall -o fuzz_main main.c spell.c dictionary.c -lcheck -lm -lrt -lpthread -lsubunit
-	./afl/afl-fuzz -i in -o out ./fuzz_main wordlist.txt @@
+	./afl/afl-fuzz -i in -o out ./fuzz_main small_wordlist.txt @@
 
 
 clean:

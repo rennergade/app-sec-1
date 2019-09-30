@@ -1,6 +1,6 @@
 Command line used to find this crash:
 
-./afl/afl-fuzz -i in -o out ./fuzz_main wordlist.txt @@
+./afl/afl-fuzz -i in -o out ./fuzz_main small_wordlist.txt @@
 
 If you can't reproduce a bug outside of afl-fuzz, be sure to set the same
 memory limit. The limit used for this fuzzing session was 50.0 MB.

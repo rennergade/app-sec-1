@@ -10,7 +10,6 @@ node* create_node(char* word)
 {
     if (strlen(word) > LENGTH) 
     {
-        // printf("Invalid word size\n"); Nixed for autograder
         return NULL;
     }
     node *tmp = (node*)malloc(sizeof(node));
@@ -35,12 +34,12 @@ bool sanity_check(char* word)
     if (strlen(word) == 0) return false;
     if (strlen(word) > LENGTH) return false;
 
-    // Nixed for autograder
-    // for(int i = 0; word[i]; i++)
-    // {   
-    //     if ((unsigned int)word[i] > 255) return false;
+    /* let's only check valid chars */
+    for(int i = 0; word[i]; i++)
+    {   
+        if ((unsigned int)word[i] > 1023) return false;
         
-    // } 
+    } 
 
     return true;
 }
@@ -74,7 +73,7 @@ int check_words(FILE* fp, hashmap_t hashtable[], char* misspelled[])
             if (strlen(word_to_check) > LENGTH) word_to_check[LENGTH] = '\0';
             remove_punc(word_to_check);
 
-            if (sanity_check(word_to_check) && !check_word(word_to_check, hashtable))
+            if (strlen(word_to_check) && !check_word(word_to_check, hashtable))
             {
                 /* if we don't find it, put it in our mispelled table. */
         
@@ -160,7 +159,13 @@ bool check_word(const char* word, hashmap_t hashtable[])
 {
     /* lowercase word for matching */
     char* lower_word = strdup(word);
+    if (!sanity_check(lower_word))
+    {
+        free(lower_word);
+        return false;
+    }
     make_lowercase(lower_word);
+
 
 
     /* get bucket */
