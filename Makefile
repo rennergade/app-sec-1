@@ -24,15 +24,15 @@ test: dictionary.o spell.o test_main.o
 prog: dictionary.o spell.o main.o
 	gcc -Wall -g -o spell_check dictionary.o spell.o main.o
 
-fuzz: dictionary.o spell.o test_main.o
+fuzz: 
 	export AFL_INST_RATIO=100 
 	export AFL_HARDEN=1 
-	./afl/afl-gcc -Wall -o fuzz_main main.o spell.o dictionary.o -lcheck -lm -lrt -lpthread -lsubunit
+	./afl/afl-gcc -Wall -o fuzz_main main.c spell.c dictionary.c -lcheck -lm -lrt -lpthread -lsubunit
 	./afl/afl-fuzz -i in -o out ./fuzz_main wordlist.txt @@
 
 
 clean:
-	rm dictionary.o spell.o main.o test_main.o check_spell.o
+	rm *.o specll_check test_main fuzz_main
 
 cleanall:clean
 	rm spell_check

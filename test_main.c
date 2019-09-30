@@ -9,11 +9,44 @@ START_TEST(test_dictionary_normal)
 {
     hashmap_t hashtable[HASH_SIZE];
     ck_assert(load_dictionary(TESTDICT, hashtable));
+    const char* bucket_check_1 = "first";
+    const char* bucket_check_2 = "second";
+    const char* bucket_check_3 = "third";
+    const char* bucket_check_4 = "test";
+
+    ck_assert_msg(strcmp(hashtable[552]->word, bucket_check_1) == 0);
+    ck_assert_msg(strcmp(hashtable[636]->word, bucket_check_2) == 0);
+    ck_assert_msg(strcmp(hashtable[539]->word, bucket_check_3) == 0);
+    ck_assert_msg(strcmp(hashtable[448]->word, bucket_check_4) == 0);
+ 
+   
     // Here we can test if certain words ended up in certain buckets
     // to ensure that our load_dictionary works as intended. I leave
     // this as an exercise.
 }
 END_TEST
+
+START_TEST(test_buffer_normal)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    ck_assert(load_dictionary(TESTDICT, hashtable));
+    const char* overflow_word = "AAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEEEFFFFFFFFFFFFFGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJKKKKKKKKKKKKKKK";    
+    ck_assert(!check_word(overflow_word, hashtable));
+
+}
+END_TEST
+
+
+START_TEST(test_accents_normal)
+{
+    hashmap_t hashtable[HASH_SIZE];
+    ck_assert(load_dictionary(TESTDICT, hashtable));
+    const char* non_english_word = "mañana";    
+    ck_assert(!check_word(non_english_word, hashtable));
+
+}
+END_TEST
+
 
 START_TEST(test_check_word_normal)
 {
@@ -21,9 +54,10 @@ START_TEST(test_check_word_normal)
     load_dictionary(DICTIONARY, hashtable);
     const char* correct_word = "Justice";
     const char* punctuation_word_2 = "pl.ace";
+    
     ck_assert(check_word(correct_word, hashtable));
     ck_assert(!check_word(punctuation_word_2, hashtable));
-    // Test here: What if a word begins and ends with "?
+    ck_assert(!check_word(punctuation_word_2, hashtable));
 }
 END_TEST
 
@@ -58,6 +92,10 @@ check_word_suite(void)
     check_word_case = tcase_create("Core");
     tcase_add_test(check_word_case, test_check_word_normal);
     tcase_add_test(check_word_case, test_check_words_normal);
+    tcase_add_test(check_word_case, test_dictionary_normal);
+    tcase_add_test(check_word_case, test_buffer_normal);
+    tcase_add_test(check_word_case, test_accents_normal);
+
     suite_add_tcase(suite, check_word_case);
 
     return suite;

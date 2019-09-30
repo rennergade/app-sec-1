@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     int num_misspelled = check_words(fp, hashtable, misspelled);
     for (int i = 0; i < num_misspelled; i++) 
     {
-    //    printf("misspelled: %s\n", misspelled[i]);
+       printf("misspelled: %s\n", misspelled[i]);
     }
     printf("Mispelled: %d\n", num_misspelled);
     fclose(fp);
